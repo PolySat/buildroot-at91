@@ -163,6 +163,9 @@ endif
 $(2)_INSTALL_OPTS                ?= install
 $(2)_INSTALL_STAGING_OPTS	?= DESTDIR=$$(STAGING_DIR) install
 $(2)_INSTALL_TARGET_OPTS		?= DESTDIR=$$(TARGET_DIR) install
+$(2)_CONFIGURE_PREFIX           ?=/usr                        
+$(2)_CONFIGURE_EXEC_PREFIX      ?=/usr
+$(2)_CONFIGURE_SYSCONFDIR       ?=/etc
 
 #
 # Configure step. Only define it if not already defined by the package
@@ -183,9 +186,9 @@ define $(2)_CONFIGURE_CMDS
 		--target=$$(GNU_TARGET_NAME) \
 		--host=$$(GNU_TARGET_NAME) \
 		--build=$$(GNU_HOST_NAME) \
-		--prefix=/usr \
-		--exec-prefix=/usr \
-		--sysconfdir=/etc \
+		--prefix=$$($(2)_CONFIGURE_PREFIX) \
+		--exec-prefix=$$($(2)_CONFIGURE_EXEC_PREFIX) \
+		--sysconfdir=$$($(2)_CONFIGURE_SYSCONFDIR) \
 		--localstatedir=/var \
 		--program-prefix="" \
 		--disable-gtk-doc \

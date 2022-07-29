@@ -12,6 +12,11 @@ CPIO_LICENSE = GPL-3.0+
 CPIO_LICENSE_FILES = COPYING
 CPIO_CPE_ID_VENDOR = gnu
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+CPIO_CONFIGURE_PREFIX=/usr/local
+CPIO_CONFIGURE_EXEC_PREFIX=/usr/local
+endif
+
 # 0002-Rewrite-dynamic-string-support.patch
 # 0003-Fix-previous-commit.patch
 CPIO_IGNORE_CVES += CVE-2021-38185

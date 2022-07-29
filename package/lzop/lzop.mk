@@ -11,6 +11,11 @@ LZOP_LICENSE_FILES = COPYING
 LZOP_DEPENDENCIES = lzo
 HOST_LZOP_DEPENDENCIES = host-lzo
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+LZOP_CONFIGURE_PREFIX=/usr/local
+LZOP_CONFIGURE_EXEC_PREFIX=/usr/local
+endif
+
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))
 

@@ -13,9 +13,19 @@ LIBJPEG_INSTALL_STAGING = YES
 LIBJPEG_CPE_ID_VENDOR = ijg
 LIBJPEG_PROVIDES = jpeg
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+JPEG_CONFIGURE_PREFIX=/usr/local
+JPEG_CONFIGURE_EXEC_PREFIX=/usr/local
+
+define LIBJPEG_REMOVE_USELESS_TOOLS
+	rm -f $(addprefix $(TARGET_DIR)/usr/local/bin/,cjpeg djpeg jpegtran rdjpgcom wrjpgcom)
+	rm -f $(addprefix $(TARGET_DIR)/usr/local/lib,libjpeg.a libjpeg.la)
+endef
+else
 define LIBJPEG_REMOVE_USELESS_TOOLS
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,cjpeg djpeg jpegtran rdjpgcom wrjpgcom)
 endef
+endif
 
 LIBJPEG_POST_INSTALL_TARGET_HOOKS += LIBJPEG_REMOVE_USELESS_TOOLS
 

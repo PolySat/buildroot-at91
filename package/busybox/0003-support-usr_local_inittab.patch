@@ -1,0 +1,33 @@
+diff -r -U3 busybox-1.35.0.orig/init/init.c busybox-1.35.0/init/init.c
+--- busybox-1.35.0.orig/init/init.c	2022-07-29 18:58:17.491689738 +0000
++++ busybox-1.35.0/init/init.c	2022-07-29 19:00:07.059554511 +0000
+@@ -667,13 +667,13 @@
+  * _is_ defined, but /etc/inittab is missing, this
+  * results in the same set of default behaviors.
+  */
+-static void parse_inittab(void)
++static void parse_inittab_internal(const char *path, int default_entries)
+ {
+ #if ENABLE_FEATURE_USE_INITTAB
+ 	char *token[4];
+-	parser_t *parser = config_open2("/etc/inittab", fopen_for_read);
++	parser_t *parser = config_open2(path, fopen_for_read);
+ 
+-	if (parser == NULL)
++	if (parser == NULL && default_entries)
+ #endif
+ 	{
+ 		/* No inittab file - set up some default behavior */
+@@ -730,6 +730,12 @@
+ #endif
+ }
+ 
++static void parse_inittab(void)
++{
++	parse_inittab_internal("/etc/inittab", 1);
++	parse_inittab_internal("/usr/local/etc/inittab", 0);
++}
++
+ static void pause_and_low_level_reboot(unsigned magic) NORETURN;
+ static void pause_and_low_level_reboot(unsigned magic)
+ {

@@ -4,7 +4,7 @@ OPTIONS="-c -l -s /var/lib/tftpboot"
 
 set -e
 
-PATH=/sbin:/bin:/usr/sbin:/usr/bin
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DESC="HPA's tftpd"
 NAME=tftpd
 DAEMON=/usr/sbin/$NAME

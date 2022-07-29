@@ -343,6 +343,18 @@ $(BUILD_DIR)/%/.stamp_staging_installed:
 				-e "s,@BASE_DIR@,$(BASE_DIR),g" \
 				$(addprefix $(STAGING_DIR)/usr/bin/,$($(PKG)_CONFIG_SCRIPTS)) ;\
 	fi
+	$(Q)if test -n "$($(PKG)_LOCAL_CONFIG_SCRIPTS)" ; then \
+		$(call MESSAGE,"Fixing package configuration files") ;\
+			$(SED)  "s,$(HOST_DIR),@HOST_DIR@,g" \
+				-e "s,$(BASE_DIR),@BASE_DIR@,g" \
+				-e "s,^\(exec_\)\?prefix=.*,\1prefix=@STAGING_DIR@/usr/local,g" \
+				-e "s,-I/usr/local/,-I@STAGING_DIR@/usr/local/,g" \
+				-e "s,-L/usr/local/,-L@STAGING_DIR@/usr/local/,g" \
+				-e 's,@STAGING_DIR@,$$(dirname $$(readlink -e $$0))/../../..,g' \
+				-e 's,@HOST_DIR@,$$(dirname $$(readlink -e $$0))/../../../../..,g' \
+				-e "s,@BASE_DIR@,$(BASE_DIR),g" \
+				$(addprefix $(STAGING_DIR)/usr/local/bin/,$($(PKG)_LOCAL_CONFIG_SCRIPTS)) ;\
+	fi
 	@$(call MESSAGE,"Fixing libtool files")
 	for la in $$(find $(STAGING_DIR)/usr/lib* -name "*.la"); do \
 		cp -a "$${la}" "$${la}.fixed" && \

@@ -14,6 +14,18 @@ PROTOBUF_LICENSE = BSD-3-Clause
 PROTOBUF_LICENSE_FILES = LICENSE
 PROTOBUF_CPE_ID_VENDOR = google
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+PROTOBUF_CONFIGURE_PREFIX=/usr/local
+PROTOBUF_CONFIGURE_EXEC_PREFIX=/usr/local
+
+define PROTOBUF_REMOVE_UNNECESSARY_TARGET_FILES
+	rm -rf $(TARGET_DIR)/usr/local/bin/protoc
+	rm -rf $(TARGET_DIR)/usr/local/lib/libprotoc.so*
+endef
+
+PROTOBUF_POST_INSTALL_TARGET_HOOKS += PROTOBUF_REMOVE_UNNECESSARY_TARGET_FILES
+endif
+
 # N.B. Need to use host protoc during cross compilation.
 PROTOBUF_DEPENDENCIES = host-protobuf
 PROTOBUF_CONF_OPTS = --with-protoc=$(HOST_DIR)/bin/protoc
@@ -39,13 +51,6 @@ PROTOBUF_INSTALL_STAGING = YES
 ifeq ($(BR2_PACKAGE_ZLIB),y)
 PROTOBUF_DEPENDENCIES += zlib
 endif
-
-define PROTOBUF_REMOVE_UNNECESSARY_TARGET_FILES
-	rm -rf $(TARGET_DIR)/usr/bin/protoc
-	rm -rf $(TARGET_DIR)/usr/lib/libprotoc.so*
-endef
-
-PROTOBUF_POST_INSTALL_TARGET_HOOKS += PROTOBUF_REMOVE_UNNECESSARY_TARGET_FILES
 
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))

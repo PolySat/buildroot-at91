@@ -18,10 +18,18 @@ define VPNC_BUILD_CMDS
 		VERSION=$(VPNC_VERSION) MANS=
 endef
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+define VPNC_INSTALL_TARGET_CMDS
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) install $(TARGET_CONFIGURE_OPTS) \
+		VERSION=$(VPNC_VERSION) MANS= \
+		DESTDIR="$(TARGET_DIR)" PREFIX=/usr/local
+endef
+else
 define VPNC_INSTALL_TARGET_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) install $(TARGET_CONFIGURE_OPTS) \
 		VERSION=$(VPNC_VERSION) MANS= \
 		DESTDIR="$(TARGET_DIR)" PREFIX=/usr
 endef
+endif
 
 $(eval $(generic-package))

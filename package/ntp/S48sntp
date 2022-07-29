@@ -1,5 +1,6 @@
 #!/bin/sh
 
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON="sntp"
 # sntp uses all the IPs resolved for the hostname (i.e. pool.ntp.org has 4).
 # It will try each until they either all timeout or time has been set. Thus

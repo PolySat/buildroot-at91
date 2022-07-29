@@ -23,7 +23,14 @@ LIBPCAP_CONF_OPTS = --disable-yydebug --with-pcap=linux --without-dag \
 	--without-dpdk
 # Disable dbus to break recursive dependencies
 LIBPCAP_CONF_OPTS += --disable-dbus
+
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+LIBPCAP_CONFIGURE_PREFIX=/usr/local
+LIBPCAP_CONFIGURE_EXEC_PREFIX=/usr/local
+LIBPCAP_LOCAL_CONFIG_SCRIPTS = pcap-config
+else
 LIBPCAP_CONFIG_SCRIPTS = pcap-config
+endif
 
 # Omit -rpath from pcap-config output
 define LIBPCAP_CONFIG_REMOVE_RPATH

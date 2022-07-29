@@ -23,6 +23,16 @@ else
 XZ_CONF_OPTS += --disable-threads
 endif
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+XZ_CONFIGURE_PREFIX=/usr/local
+XZ_CONFIGURE_EXEC_PREFIX=/usr/local
+XZ_POST_INSTALL_TARGET_HOOKS+=XZ_REMOVE_STATIC_LIBS
+
+define XZ_REMOVE_STATIC_LIBS
+	rm -f $(addprefix $(TARGET_DIR)/usr/local/lib/,liblzma.a liblzma.la)
+endef
+endif
+
 # we are built before ccache
 HOST_XZ_CONF_ENV = \
 	CC="$(HOSTCC_NOCCACHE)" \

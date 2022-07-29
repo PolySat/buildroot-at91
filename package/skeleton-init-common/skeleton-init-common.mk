@@ -17,6 +17,10 @@ SKELETON_INIT_COMMON_INSTALL_STAGING = YES
 SKELETON_INIT_COMMON_PATH = system/skeleton
 
 define SKELETON_INIT_COMMON_INSTALL_TARGET_CMDS
+	$(Q)mkdir -p $(TARGET_DIR)/usr/local/include
+	$(Q)mkdir -p $(TARGET_DIR)/usr/local/bin
+	$(Q)mkdir -p $(TARGET_DIR)/usr/local/sbin
+	$(Q)mkdir -p $(TARGET_DIR)/usr/local/lib
 	$(call SYSTEM_RSYNC,$(SKELETON_INIT_COMMON_PATH),$(TARGET_DIR))
 	$(call SYSTEM_USR_SYMLINKS_OR_DIRS,$(TARGET_DIR))
 	$(call SYSTEM_LIB_SYMLINK,$(TARGET_DIR))
@@ -29,6 +33,10 @@ endef
 # correctly setup for merged/non-merged /usr. The simplest is to
 # fill it in with the content of the skeleton.
 define SKELETON_INIT_COMMON_INSTALL_STAGING_CMDS
+	$(Q)mkdir -p $(STAGING_DIR)/usr/local/include
+	$(Q)mkdir -p $(STAGING_DIR)/usr/local/bin
+	$(Q)mkdir -p $(STAGING_DIR)/usr/local/sbin
+	$(Q)mkdir -p $(STAGING_DIR)/usr/local/lib
 	$(call SYSTEM_RSYNC,$(SKELETON_INIT_COMMON_PATH),$(STAGING_DIR))
 	$(call SYSTEM_USR_SYMLINKS_OR_DIRS,$(STAGING_DIR))
 	$(call SYSTEM_LIB_SYMLINK,$(STAGING_DIR))

@@ -20,7 +20,7 @@ ALSA_UTILS_SELINUX_MODULES += alsa
 endif
 
 ALSA_UTILS_CONF_ENV = \
-	ac_cv_prog_ncurses5_config=$(STAGING_DIR)/usr/bin/$(NCURSES_CONFIG_SCRIPTS) \
+	ac_cv_prog_ncurses5_config=$(STAGING_DIR)/$(NCURSES_CONFIG_SCRIPTS_PATH) \
 	LIBS=$(TARGET_NLS_LIBS)
 
 ALSA_UTILS_CONF_OPTS = \

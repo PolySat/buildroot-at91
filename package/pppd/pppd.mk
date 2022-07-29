@@ -13,6 +13,11 @@ PPPD_LICENSE_FILES = \
 PPPD_CPE_ID_VENDOR = point-to-point_protocol_project
 PPPD_CPE_ID_PRODUCT = point-to-point_protocol
 PPPD_SELINUX_MODULES = ppp
+PPPD_PREFIX=/usr
+
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+PPPD_PREFIX=/usr/local
+endif
 
 PPPD_MAKE_OPTS = HAVE_INET6=y
 
@@ -67,7 +72,7 @@ endif
 define PPPD_CONFIGURE_CMDS
 	$(SED) 's/FILTER=y/#FILTER=y/' $(PPPD_DIR)/pppd/Makefile.linux
 	$(SED) 's/ifneq ($$(wildcard \/usr\/include\/pcap-bpf.h),)/ifdef FILTER/' $(PPPD_DIR)/*/Makefile.linux
-	( cd $(@D); $(TARGET_MAKE_ENV) ./configure --prefix=/usr )
+	( cd $(@D); $(TARGET_MAKE_ENV) ./configure --prefix=$(PPPD_PREFIX) )
 endef
 
 define PPPD_BUILD_CMDS
@@ -78,11 +83,11 @@ endef
 ifeq ($(BR2_PACKAGE_PPPD_RADIUS),y)
 define PPPD_INSTALL_RADIUS
 	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/radius/radattr.so \
-		$(TARGET_DIR)/usr/lib/pppd/$(PPPD_VERSION)/radattr.so
-	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/radius/radius.so \
-		$(TARGET_DIR)/usr/lib/pppd/$(PPPD_VERSION)/radius.so
-	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/radius/radrealms.so \
-		$(TARGET_DIR)/usr/lib/pppd/$(PPPD_VERSION)/radrealms.so
+		$(TARGET_DIR)$(PPPD_PREFIX)/lib/pppd/$(PPPD_VERSION)/radattr.so
+	$(INSTALL) -D $(PPPD_DIR)/lib/pppd/plugins/radius/radius.so \
+		$(TARGET_DIR)$(PPPD_PREFIX)/pppd/$(PPPD_VERSION)/radius.so
+	$(INSTALL) -D $(PPPD_DIR)/lib/pppd/plugins/radius/radrealms.so \
+		$(TARGET_DIR)$(PPPD_PREFIX)/lib/pppd/$(PPPD_VERSION)/radrealms.so
 	for m in $(PPPD_RADIUS_CONF); do \
 		$(INSTALL) -m 644 -D $(PPPD_DIR)/pppd/plugins/radius/etc/$$m \
 			$(TARGET_DIR)/etc/ppp/radius/$$m; \
@@ -102,25 +107,25 @@ define PPPD_INSTALL_TARGET_CMDS
 			$(TARGET_DIR)/usr/sbin/$$sbin; \
 	done
 	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/minconn.so \
-		$(TARGET_DIR)/usr/lib/pppd/$(PPPD_VERSION)/minconn.so
+		$(TARGET_DIR)$(PPPD_PREFIX)/lib/pppd/$(PPPD_VERSION)/minconn.so
 	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/passprompt.so \
-		$(TARGET_DIR)/usr/lib/pppd/$(PPPD_VERSION)/passprompt.so
+		$(TARGET_DIR)$(PPPD_PREFIX)/lib/pppd/$(PPPD_VERSION)/passprompt.so
 	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/passwordfd.so \
-		$(TARGET_DIR)/usr/lib/pppd/$(PPPD_VERSION)/passwordfd.so
+		$(TARGET_DIR)$(PPPD_PREFIX)/lib/pppd/$(PPPD_VERSION)/passwordfd.so
 	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/pppoatm/pppoatm.so \
-		$(TARGET_DIR)/usr/lib/pppd/$(PPPD_VERSION)/pppoatm.so
+		$(TARGET_DIR)$(PPPD_PREFIX)/lib/pppd/$(PPPD_VERSION)/pppoatm.so
 	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/pppoe/pppoe.so \
-		$(TARGET_DIR)/usr/lib/pppd/$(PPPD_VERSION)/pppoe.so
+		$(TARGET_DIR)$(PPPD_PREFIX)/lib/pppd/$(PPPD_VERSION)/pppoe.so
 	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/pppoe/pppoe-discovery \
-		$(TARGET_DIR)/usr/sbin/pppoe-discovery
+		$(TARGET_DIR)$(PPPD_PREFIX)/sbin/pppoe-discovery
 	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/winbind.so \
-		$(TARGET_DIR)/usr/lib/pppd/$(PPPD_VERSION)/winbind.so
+		$(TARGET_DIR)$(PPPD_PREFIX)/lib/pppd/$(PPPD_VERSION)/winbind.so
 	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/pppol2tp/openl2tp.so \
-		$(TARGET_DIR)/usr/lib/pppd/$(PPPD_VERSION)/openl2tp.so
+		$(TARGET_DIR)$(PPPD_PREFIX)/lib/pppd/$(PPPD_VERSION)/openl2tp.so
 	$(INSTALL) -D $(PPPD_DIR)/pppd/plugins/pppol2tp/pppol2tp.so \
-		$(TARGET_DIR)/usr/lib/pppd/$(PPPD_VERSION)/pppol2tp.so
-	$(INSTALL) -D -m 0755 $(PPPD_DIR)/scripts/pon $(TARGET_DIR)/usr/bin/pon
-	$(INSTALL) -D -m 0755 $(PPPD_DIR)/scripts/poff $(TARGET_DIR)/usr/bin/poff
+		$(TARGET_DIR)$(PPPD_PREFIX)/lib/pppd/$(PPPD_VERSION)/pppol2tp.so
+	$(INSTALL) -D -m 0755 $(PPPD_DIR)/scripts/pon $(TARGET_DIR)$(PPPD_PREFIX)/bin/pon
+	$(INSTALL) -D -m 0755 $(PPPD_DIR)/scripts/poff $(TARGET_DIR)$(PPPD_PREFIX)/bin/poff
 	$(PPPD_INSTALL_RADIUS)
 endef
 

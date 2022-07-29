@@ -1,5 +1,11 @@
 menu "Filesystem images"
 
+config BR2_PREFER_USR_LOCAL
+	bool "Prefer /usr/local"
+	help
+	   Install as many files as possible in /usr/local instead of /usr
+
+
 source "fs/axfs/Config.in"
 source "fs/btrfs/Config.in"
 source "fs/cloop/Config.in"

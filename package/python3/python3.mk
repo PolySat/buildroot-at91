@@ -13,6 +13,14 @@ PYTHON3_LICENSE_FILES = LICENSE
 PYTHON3_CPE_ID_VENDOR = python
 PYTHON3_CPE_ID_PRODUCT = python
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+PYTHON3_CONFIGURE_PREFIX=/usr/local
+PYTHON3_CONFIGURE_EXEC_PREFIX=/usr/local
+PYTHON_PREFIX=/usr/local
+else
+PYTHON_PREFIX=/usr
+endif
+
 # This host Python is installed in $(HOST_DIR), as it is needed when
 # cross-compiling third-party Python modules.
 
@@ -228,19 +236,19 @@ PYTHON3_PRE_BUILD_HOOKS += PYTHON3_MAKE_REGEN_IMPORTLIB
 # and the pyconfig.h files are needed at runtime.
 #
 define PYTHON3_REMOVE_USELESS_FILES
-	rm -f $(TARGET_DIR)/usr/bin/python$(PYTHON3_VERSION_MAJOR)-config
-	rm -f $(TARGET_DIR)/usr/bin/python$(PYTHON3_VERSION_MAJOR)m-config
-	rm -f $(TARGET_DIR)/usr/bin/python3-config
-	rm -f $(TARGET_DIR)/usr/bin/smtpd.py.3
-	rm -f $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/distutils/command/wininst*.exe
-	for i in `find $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/config-$(PYTHON3_VERSION_MAJOR)m-*/ \
+	rm -f $(TARGET_DIR)$(PYTHON_PREFIX)/bin/python$(PYTHON3_VERSION_MAJOR)-config
+	rm -f $(TARGET_DIR)$(PYTHON_PREFIX)/bin/python$(PYTHON3_VERSION_MAJOR)m-config
+	rm -f $(TARGET_DIR)$(PYTHON_PREFIX)/bin/python3-config
+	rm -f $(TARGET_DIR)$(PYTHON_PREFIX)/bin/smtpd.py.3
+	rm -f $(TARGET_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR)/distutils/command/wininst*.exe
+	for i in `find $(TARGET_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR)/config-$(PYTHON3_VERSION_MAJOR)m-*/ \
 		-type f -not -name Makefile` ; do \
 		rm -f $$i ; \
 	done
-	rm -rf $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/__pycache__/
-	rm -rf $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/lib-dynload/sysconfigdata/__pycache__
-	rm -rf $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/collections/__pycache__
-	rm -rf $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/importlib/__pycache__
+	rm -rf $(TARGET_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR)/__pycache__/
+	rm -rf $(TARGET_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR)/lib-dynload/sysconfigdata/__pycache__
+	rm -rf $(TARGET_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR)/collections/__pycache__
+	rm -rf $(TARGET_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR)/importlib/__pycache__
 endef
 
 PYTHON3_POST_INSTALL_TARGET_HOOKS += PYTHON3_REMOVE_USELESS_FILES
@@ -249,7 +257,7 @@ PYTHON3_POST_INSTALL_TARGET_HOOKS += PYTHON3_REMOVE_USELESS_FILES
 # Make sure libpython gets stripped out on target
 #
 define PYTHON3_ENSURE_LIBPYTHON_STRIPPED
-	chmod u+w $(TARGET_DIR)/usr/lib/libpython$(PYTHON3_VERSION_MAJOR)*.so
+	chmod u+w $(TARGET_DIR)$(PYTHON_PREFIX)/lib/libpython$(PYTHON3_VERSION_MAJOR)*.so
 endef
 
 PYTHON3_POST_INSTALL_TARGET_HOOKS += PYTHON3_ENSURE_LIBPYTHON_STRIPPED
@@ -258,7 +266,7 @@ PYTHON3_AUTORECONF = YES
 PYTHON3_AUTORECONF_OPTS = --include=$(HOST_DIR)/share/autoconf-archive
 
 define PYTHON3_INSTALL_SYMLINK
-	ln -fs python3 $(TARGET_DIR)/usr/bin/python
+	ln -fs python3 $(TARGET_DIR)$(PYTHON_PREFIX)/bin/python
 endef
 
 PYTHON3_POST_INSTALL_TARGET_HOOKS += PYTHON3_INSTALL_SYMLINK
@@ -271,7 +279,7 @@ endef
 HOST_PYTHON3_POST_INSTALL_HOOKS += HOST_PYTHON3_INSTALL_SYMLINK
 
 # Provided to other packages
-PYTHON3_PATH = $(STAGING_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/
+PYTHON3_PATH = $(STAGING_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR)/
 
 # Support for socket.AF_BLUETOOTH
 ifeq ($(BR2_PACKAGE_BLUEZ5_UTILS_HEADERS),y)
@@ -283,7 +291,7 @@ $(eval $(host-autotools-package))
 
 ifeq ($(BR2_REPRODUCIBLE),y)
 define PYTHON3_FIX_TIME
-	find $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR) -name '*.py' -print0 | \
+	find $(TARGET_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR) -name '*.py' -print0 | \
 		xargs -0 --no-run-if-empty touch -d @$(SOURCE_DATE_EPOCH)
 endef
 endif
@@ -295,7 +303,7 @@ define PYTHON3_CREATE_PYC_FILES
 		$(TOPDIR)/support/scripts/pycompile.py \
 		$(if $(VERBOSE),--verbose) \
 		--strip-root $(TARGET_DIR) \
-		$(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)
+		$(TARGET_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR)
 endef
 
 ifeq ($(BR2_PACKAGE_PYTHON3_PYC_ONLY)$(BR2_PACKAGE_PYTHON3_PY_PYC),y)
@@ -304,7 +312,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_PYTHON3_PYC_ONLY),y)
 define PYTHON3_REMOVE_PY_FILES
-	find $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR) -name '*.py' \
+	find $(TARGET_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR) -name '*.py' \
 		$(if $(strip $(KEEP_PYTHON_PY_FILES)),-not \( $(call finddirclauses,$(TARGET_DIR),$(KEEP_PYTHON_PY_FILES)) \) ) \
 		-print0 | \
 		xargs -0 --no-run-if-empty rm -f
@@ -316,7 +324,7 @@ endif
 # case, we make sure we remove all of them.
 ifeq ($(BR2_PACKAGE_PYTHON3_PY_ONLY),y)
 define PYTHON3_REMOVE_PYC_FILES
-	find $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR) -name '*.pyc' -print0 | \
+	find $(TARGET_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR) -name '*.pyc' -print0 | \
 		xargs -0 --no-run-if-empty rm -f
 endef
 PYTHON3_TARGET_FINALIZE_HOOKS += PYTHON3_REMOVE_PYC_FILES
@@ -326,7 +334,7 @@ endif
 # .opt-2.pyc files, since they can't work without their non-optimized
 # variant.
 define PYTHON3_REMOVE_OPTIMIZED_PYC_FILES
-	find $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR) -name '*.opt-1.pyc' -print0 -o -name '*.opt-2.pyc' -print0 | \
+	find $(TARGET_DIR)$(PYTHON_PREFIX)/lib/python$(PYTHON3_VERSION_MAJOR) -name '*.opt-1.pyc' -print0 -o -name '*.opt-2.pyc' -print0 | \
 		xargs -0 --no-run-if-empty rm -f
 endef
 PYTHON3_TARGET_FINALIZE_HOOKS += PYTHON3_REMOVE_OPTIMIZED_PYC_FILES

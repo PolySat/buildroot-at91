@@ -14,6 +14,11 @@ ZEROMQ_LICENSE_FILES = COPYING COPYING.LESSER
 ZEROMQ_CPE_ID_VENDOR = zeromq
 ZEROMQ_CPE_ID_PRODUCT = libzmq
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+ZEROMQ_CONFIGURE_PREFIX=/usr/local
+ZEROMQ_CONFIGURE_EXEC_PREFIX=/usr/local
+endif
+
 # Assume these flags are always available. It is true, at least for
 # SOCK_CLOEXEC, since linux v2.6.27.
 # Note: the flag TCP_KEEPALIVE is NOT available so we do not include it.

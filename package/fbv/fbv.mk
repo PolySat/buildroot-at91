@@ -7,6 +7,11 @@
 FBV_VERSION = 1.0b
 FBV_SITE = http://s-tech.elsat.net.pl/fbv
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+FBV_CONFIGURE_PREFIX=/usr/local
+FBV_CONFIGURE_EXEC_PREFIX=/usr/local
+endif
+
 FBV_LICENSE = GPL-2.0
 FBV_LICENSE_FILES = COPYING
 

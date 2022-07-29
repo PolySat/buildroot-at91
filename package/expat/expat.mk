@@ -13,6 +13,11 @@ EXPAT_LICENSE_FILES = COPYING
 EXPAT_CPE_ID_VENDOR = libexpat_project
 EXPAT_CPE_ID_PRODUCT = libexpat
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+EXPAT_CONFIGURE_PREFIX=/usr/local
+EXPAT_CONFIGURE_EXEC_PREFIX=/usr/local
+endif
+
 EXPAT_CONF_OPTS = \
 	--without-docbook --without-examples --without-tests --without-xmlwf
 HOST_EXPAT_CONF_OPTS = --without-docbook --without-examples --without-tests

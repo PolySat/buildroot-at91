@@ -45,20 +45,20 @@ PKG_PYTHON_DISTUTILS_ENV = \
 	_PYTHON_PROJECT_BASE="$(PYTHON3_DIR)" \
 	_PYTHON_SYSCONFIGDATA_NAME="$(PKG_PYTHON_SYSCONFIGDATA_NAME)" \
 	_python_sysroot=$(STAGING_DIR) \
-	_python_prefix=/usr \
-	_python_exec_prefix=/usr
+	_python_prefix=$(PYTHON_PREFIX) \
+	_python_exec_prefix=$(PYTHON_PREFIX)
 
 PKG_PYTHON_DISTUTILS_BUILD_OPTS = \
-	--executable=/usr/bin/python
+	--executable=$(PYTHON_PREFIX)/bin/python
 
 PKG_PYTHON_DISTUTILS_INSTALL_TARGET_OPTS = \
-	--install-headers=/usr/include/python$(PYTHON3_VERSION_MAJOR) \
-	--prefix=/usr \
+	--install-headers=$(PYTHON_PREFIX)/include/python$(PYTHON3_VERSION_MAJOR) \
+	--prefix=$(PYTHON_PREFIX) \
 	--root=$(TARGET_DIR)
 
 PKG_PYTHON_DISTUTILS_INSTALL_STAGING_OPTS = \
-	--install-headers=/usr/include/python$(PYTHON3_VERSION_MAJOR) \
-	--prefix=/usr \
+	--install-headers=$(PYTHON_PREFIX)/include/python$(PYTHON3_VERSION_MAJOR) \
+	--prefix=$(PYTHON_PREFIX) \
 	--root=$(STAGING_DIR)
 
 # Host distutils-based packages
@@ -82,20 +82,20 @@ PKG_PYTHON_SETUPTOOLS_ENV = \
 	PYTHONNOUSERSITE=1 \
 	SETUPTOOLS_USE_DISTUTILS=stdlib \
 	_python_sysroot=$(STAGING_DIR) \
-	_python_prefix=/usr \
-	_python_exec_prefix=/usr
+	_python_prefix=$(PYTHON_PREFIX) \
+	_python_exec_prefix=$(PYTHON_PREFIX)
 
 PKG_PYTHON_SETUPTOOLS_INSTALL_TARGET_OPTS = \
-	--install-headers=/usr/include/python$(PYTHON3_VERSION_MAJOR) \
-	--prefix=/usr \
-	--executable=/usr/bin/python \
+	--install-headers=$(PYTHON_PREFIX)/include/python$(PYTHON3_VERSION_MAJOR) \
+	--prefix=$(PYTHON_PREFIX) \
+	--executable=$(PYTHON_PREFIX)/bin/python \
 	--single-version-externally-managed \
 	--root=$(TARGET_DIR)
 
 PKG_PYTHON_SETUPTOOLS_INSTALL_STAGING_OPTS = \
-	--install-headers=/usr/include/python$(PYTHON3_VERSION_MAJOR) \
-	--prefix=/usr \
-	--executable=/usr/bin/python \
+	--install-headers=$(PYTHON_PREFIX)/include/python$(PYTHON3_VERSION_MAJOR) \
+	--prefix=$(PYTHON_PREFIX) \
+	--executable=$(PYTHON_PREFIX)/bin/python \
 	--single-version-externally-managed \
 	--root=$(STAGING_DIR)
 

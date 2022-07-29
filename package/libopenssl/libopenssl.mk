@@ -17,6 +17,11 @@ LIBOPENSSL_CFLAGS = $(TARGET_CFLAGS)
 LIBOPENSSL_PROVIDES = openssl
 LIBOPENSSL_CPE_ID_VENDOR = $(LIBOPENSSL_PROVIDES)
 LIBOPENSSL_CPE_ID_PRODUCT = $(LIBOPENSSL_PROVIDES)
+LIBOPENSSL_PREFIX=/usr
+
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+LIBOPENSSL_PREFIX=/usr/local
+endif
 
 ifeq ($(BR2_m68k_cf),y)
 # relocation truncated to fit: R_68K_GOT16O
@@ -72,7 +77,7 @@ define LIBOPENSSL_CONFIGURE_CMDS
 		$(TARGET_CONFIGURE_OPTS) \
 		./Configure \
 			$(LIBOPENSSL_TARGET_ARCH) \
-			--prefix=/usr \
+			--prefix=$(LIBOPENSSL_PREFIX) \
 			--openssldir=/etc/ssl \
 			$(if $(BR2_TOOLCHAIN_HAS_LIBATOMIC),-latomic) \
 			$(if $(BR2_TOOLCHAIN_HAS_THREADS),threads,no-threads) \
@@ -141,8 +146,8 @@ endef
 
 define LIBOPENSSL_INSTALL_TARGET_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) DESTDIR=$(TARGET_DIR) install
-	rm -rf $(TARGET_DIR)/usr/lib/ssl
-	rm -f $(TARGET_DIR)/usr/bin/c_rehash
+	rm -rf $(TARGET_DIR)$(LIBOPENSSL_PREFIX)/ssl
+	rm -f $(TARGET_DIR)$(LIBOPENSSL_PREFIX)/bin/c_rehash
 endef
 
 # libdl has no business in a static build
@@ -164,7 +169,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_LIBOPENSSL_BIN),)
 define LIBOPENSSL_REMOVE_BIN
-	$(RM) -f $(TARGET_DIR)/usr/bin/openssl
+	$(RM) -f $(TARGET_DIR)$(LIBOPENSSL_PREFIX)/openssl
 	$(RM) -f $(TARGET_DIR)/etc/ssl/misc/{CA.*,c_*}
 endef
 LIBOPENSSL_POST_INSTALL_TARGET_HOOKS += LIBOPENSSL_REMOVE_BIN
@@ -172,7 +177,7 @@ endif
 
 ifneq ($(BR2_PACKAGE_LIBOPENSSL_ENGINES),y)
 define LIBOPENSSL_REMOVE_LIBOPENSSL_ENGINES
-	rm -rf $(TARGET_DIR)/usr/lib/engines-1.1
+	rm -rf $(TARGET_DIR)$(LIBOPENSSL_PREFIX)/engines-1.1
 endef
 LIBOPENSSL_POST_INSTALL_TARGET_HOOKS += LIBOPENSSL_REMOVE_LIBOPENSSL_ENGINES
 endif

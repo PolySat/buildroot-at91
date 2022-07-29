@@ -21,6 +21,12 @@ RSYNC_CONF_OPTS = \
 	--disable-lz4 \
 	--disable-asm
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+RSYNC_CONFIGURE_PREFIX=/usr/local
+RSYNC_CONFIGURE_EXEC_PREFIX=/usr/local
+RSYNC_CONFIGURE_SYSCONFDIR=/usr/local/etc
+endif
+
 # 0001-rsync-ssl-Verify-the-hostname-in-the-certificate-when-using-openssl.patch
 RSYNC_IGNORE_CVES += CVE-2020-14387
 

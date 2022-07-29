@@ -7,6 +7,11 @@
 GCC_FINAL_VERSION = $(GCC_VERSION)
 GCC_FINAL_SITE = $(GCC_SITE)
 GCC_FINAL_SOURCE = $(GCC_SOURCE)
+GCC_FINAL_LIB_DEST = /usr/lib
+
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+GCC_FINAL_LIB_DEST = /usr/local/lib
+endif
 
 HOST_GCC_FINAL_DL_SUBDIR = gcc
 
@@ -193,7 +198,7 @@ ifneq ($(HOST_GCC_FINAL_USR_LIBS),)
 define HOST_GCC_FINAL_INSTALL_STATIC_LIBS
 	for i in $(HOST_GCC_FINAL_USR_LIBS) ; do \
 		cp -dpf $(HOST_GCC_FINAL_GCC_LIB_DIR)/$${i}.a \
-			$(STAGING_DIR)/usr/lib/ ; \
+			$(STAGING_DIR)$(GCC_FINAL_LIB_DEST)/ ; \
 	done
 endef
 
@@ -201,9 +206,9 @@ ifeq ($(BR2_STATIC_LIBS),)
 define HOST_GCC_FINAL_INSTALL_SHARED_LIBS
 	for i in $(HOST_GCC_FINAL_USR_LIBS) ; do \
 		cp -dpf $(HOST_GCC_FINAL_GCC_LIB_DIR)/$${i}.so* \
-			$(STAGING_DIR)/usr/lib/ ; \
+			$(STAGING_DIR)$(GCC_FINAL_LIB_DEST)/ ; \
 		cp -dpf $(HOST_GCC_FINAL_GCC_LIB_DIR)/$${i}.so* \
-			$(TARGET_DIR)/usr/lib/ ; \
+			$(TARGET_DIR)$(GCC_FINAL_LIB_DEST)/ ; \
 	done
 endef
 endif

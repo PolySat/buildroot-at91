@@ -12,6 +12,8 @@ UTIL_LINUX_VERSION = $(UTIL_LINUX_VERSION_MAJOR).4
 UTIL_LINUX_SOURCE = util-linux-$(UTIL_LINUX_VERSION).tar.xz
 UTIL_LINUX_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/util-linux/v$(UTIL_LINUX_VERSION_MAJOR)
 
+UTIL_LINUX_CONF_ENV += PKG_CONFIG_PATH=$(STAGING_DIR)/usr/local/lib/pkgconfig
+
 # README.licensing claims that some files are GPL-2.0 only, but this is not
 # true. Some files are GPL-3.0+ but only in tests and optionally in hwclock
 # (but we disable that option). rfkill uses an ISC-style license.
@@ -79,10 +81,10 @@ ifeq ($(BR2_PACKAGE_NCURSES),y)
 UTIL_LINUX_DEPENDENCIES += ncurses
 ifeq ($(BR2_PACKAGE_NCURSES_WCHAR),y)
 UTIL_LINUX_CONF_OPTS += --with-ncursesw
-UTIL_LINUX_CONF_ENV += NCURSESW6_CONFIG=$(STAGING_DIR)/usr/bin/$(NCURSES_CONFIG_SCRIPTS)
+UTIL_LINUX_CONF_ENV += NCURSESW6_CONFIG=$(STAGING_DIR)/$(NCURSES_CONFIG_SCRIPTS_PATH)
 else
 UTIL_LINUX_CONF_OPTS += --without-ncursesw --with-ncurses --disable-widechar
-UTIL_LINUX_CONF_ENV += NCURSES6_CONFIG=$(STAGING_DIR)/usr/bin/$(NCURSES_CONFIG_SCRIPTS)
+UTIL_LINUX_CONF_ENV += NCURSES6_CONFIG=$(STAGING_DIR)/$(NCURSES_CONFIG_SCRIPTS_PATH)
 endif
 else
 ifeq ($(BR2_USE_WCHAR),y)

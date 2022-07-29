@@ -14,6 +14,14 @@ LIBZLIB_PROVIDES = zlib
 LIBZLIB_CPE_ID_VENDOR = gnu
 LIBZLIB_CPE_ID_PRODUCT = zlib
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+LIBZLIB_POST_INSTALL_TARGET_HOOKS=LIBZLIB_CLEANUP_STATIC_LIBRARIES
+
+define LIBZLIB_CLEANUP_STATIC_LIBRARIES
+        rm -f $(TARGET_DIR)/usr/local/lib/libz.a
+endef
+endif
+
 # It is not possible to build only a shared version of zlib, so we build both
 # shared and static, unless we only want the static libs, and we eventually
 # selectively remove what we do not want
@@ -66,9 +74,15 @@ endef
 # time to build other packages, and it is anyway removed later before
 # assembling the filesystem images anyway.
 ifeq ($(BR2_SHARED_LIBS),y)
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+define LIBZLIB_RM_STATIC_STAGING
+	rm -f $(STAGING_DIR)/usr/local/lib/libz.a
+endef
+else
 define LIBZLIB_RM_STATIC_STAGING
 	rm -f $(STAGING_DIR)/usr/lib/libz.a
 endef
+endif
 LIBZLIB_POST_INSTALL_STAGING_HOOKS += LIBZLIB_RM_STATIC_STAGING
 endif
 

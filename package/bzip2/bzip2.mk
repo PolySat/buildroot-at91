@@ -11,6 +11,13 @@ BZIP2_LICENSE = bzip2 license
 BZIP2_LICENSE_FILES = LICENSE
 BZIP2_CPE_ID_VENDOR = bzip
 
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+BZIP2_POST_INSTALL_TARGET_HOOKS+=BZIP2_CLEAN_STATIC_LIBS
+define BZIP2_CLEAN_STATIC_LIBS
+	rm -f $(addprefix $(TARGET_DIR)/usr/local/lib/,libbz2.a)
+endef
+endif
+
 ifeq ($(BR2_STATIC_LIBS),)
 define BZIP2_BUILD_SHARED_CMDS
 	$(TARGET_MAKE_ENV) \
@@ -38,19 +45,35 @@ define BZIP2_INSTALL_STAGING_CMDS
 endef
 
 ifeq ($(BR2_STATIC_LIBS),)
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+define BZIP2_INSTALL_TARGET_SHARED_CMDS
+	$(TARGET_MAKE_ENV) $(MAKE) \
+		-f Makefile-libbz2_so PREFIX=$(TARGET_DIR)/usr/local -C $(@D) install
+endef
+else
 define BZIP2_INSTALL_TARGET_SHARED_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE) \
 		-f Makefile-libbz2_so PREFIX=$(TARGET_DIR)/usr -C $(@D) install
 endef
 endif
+endif
 
 # make sure busybox doesn't get overwritten by make install
+ifeq ($(BR2_PREFER_USR_LOCAL),y)
+define BZIP2_INSTALL_TARGET_CMDS
+	rm -f $(addprefix $(TARGET_DIR)/usr/local/bin/,bzip2 bunzip2 bzcat)
+	$(TARGET_MAKE_ENV) $(MAKE) \
+		PREFIX=$(TARGET_DIR)/usr/local -C $(@D) install
+	$(BZIP2_INSTALL_TARGET_SHARED_CMDS)
+endef
+else
 define BZIP2_INSTALL_TARGET_CMDS
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,bzip2 bunzip2 bzcat)
 	$(TARGET_MAKE_ENV) $(MAKE) \
 		PREFIX=$(TARGET_DIR)/usr -C $(@D) install
 	$(BZIP2_INSTALL_TARGET_SHARED_CMDS)
 endef
+endif
 
 define HOST_BZIP2_BUILD_CMDS
 	$(HOST_MAKE_ENV) $(HOST_CONFIGURE_OPTS) \
