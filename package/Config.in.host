@@ -102,3 +102,5 @@ menu "Host utilities"
 	source "package/zstd/Config.in.host"
 
 endmenu
+
+source "package/polysat/Config.in.host"

@@ -531,6 +531,7 @@ ifneq ($(PACKAGE_OVERRIDE_FILE),)
 endif
 
 include $(sort $(wildcard package/*/*.mk))
+include $(sort $(wildcard package/polysat/*/*.mk))
 
 include boot/common.mk
 include linux/linux.mk

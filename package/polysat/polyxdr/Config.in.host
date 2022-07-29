@@ -1,0 +1,7 @@
+config BR2_PACKAGE_HOST_POLYXDR
+	bool "host polyxdr"
+	help
+	  polyxdr is a customized xdr schema parser and generator used
+	  by PolySat in their process library.
+
+	  https://github.com/PolySat/polyxdr
