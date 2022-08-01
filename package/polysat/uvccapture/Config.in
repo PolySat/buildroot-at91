@@ -1,0 +1,29 @@
+config BR2_PACKAGE_UVCCAPTURE
+    bool "uvccapture"
+    select BR2_PACKAGE_JPEG
+    select BR2_PACKAGE_LIBGPIO
+    help
+        Process that captures still images from a Video4Linux (v4l) source.
+
+choice
+   prompt "uvccapture version"
+   depends on BR2_PACKAGE_UVCCAPTURE
+   default BR2_PACKAGE_UVCCAPTURE_version_head
+   help
+      The git version of the uvccapture code to use
+
+   config BR2_PACKAGE_UVCCAPTURE_version_head
+      bool "HEAD"
+
+   config BR2_PACKAGE_UVCCAPTURE_version_custom
+      bool "Manually specify git tag"
+
+endchoice
+
+config BR2_PACKAGE_UVCCAPTURE_CONFIG_CUSTOM_VERSION_STR
+   string "uvccapture version"
+   depends on BR2_PACKAGE_UVCCAPTURE
+   depends on BR2_PACKAGE_UVCCAPTURE_version_custom
+   help
+      Custom git tag to build.
+
