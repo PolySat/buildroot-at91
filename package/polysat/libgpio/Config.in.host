@@ -1,0 +1,4 @@
+config BR2_PACKAGE_HOST_LIBGPIO
+    bool "PolySat GPIO Library"
+    help
+        Polysat's gpio library code.

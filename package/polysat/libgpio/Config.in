@@ -1,0 +1,30 @@
+config BR2_PACKAGE_LIBGPIO
+    bool "PolySat GPIO Library"
+    help
+        Polysat's gpio library code.
+
+choice
+   prompt "libgpio Version"
+   depends on BR2_PACKAGE_LIBGPIO
+   default BR2_PACKAGE_LIBGPIO_version_head
+   help
+      The git version of the libgpio code to use
+
+   config BR2_PACKAGE_LIBGPIO_version_head
+      bool "HEAD"
+
+   config BR2_PACKAGE_LIBGPIO_version_custom
+      bool "Manually specify git tag to build"
+
+   config BR2_PACKAGE_LIBGPIO_version_1
+      bool "1.0"
+
+endchoice
+
+config BR2_PACKAGE_LIBGPIO_CONFIG_CUSTOM_VERSION_STR
+   string "libgpio version"
+   depends on BR2_PACKAGE_LIBGPIO
+   depends on BR2_PACKAGE_LIBGPIO_version_custom
+   help
+      Custom git tag to build.
+
