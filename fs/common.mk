@@ -109,6 +109,14 @@ ROOTFS_$(2)_FINAL_IMAGE_NAME = $$(strip $$(ROOTFS_$(2)_IMAGE_NAME))
 ROOTFS_$(2)_DIR = $$(FS_DIR)/$(1)
 ROOTFS_$(2)_TARGET_DIR = $$(ROOTFS_$(2)_DIR)/target
 
+ifeq ($$(BR2_TARGET_SEPARATE_USR_LOCAL),y)
+USRLOCAL_$(2)_NAME = usrlocal-$(1)
+USRLOCAL_$(2)_TYPE = usrlocal
+USRLOCAL_$(2)_IMAGE_NAME ?= usrlocal.$(1)
+USRLOCAL_$(2)_FINAL_IMAGE_NAME = $$(strip $$(USRLOCAL_$(2)_IMAGE_NAME))
+USRLOCAL_$(2)_TARGET_DIR = $$(ROOTFS_$(2)_DIR)/usrlocal
+endif
+
 ROOTFS_$(2)_DEPENDENCIES += rootfs-common
 
 ROOTFS_$(2)_FINAL_RECURSIVE_DEPENDENCIES = $$(sort \
@@ -172,6 +180,12 @@ $$(BINARIES_DIR)/$$(ROOTFS_$(2)_FINAL_IMAGE_NAME): $$(ROOTFS_$(2)_DEPENDENCIES)
 		$$(BASE_TARGET_DIR)/ \
 		$$(TARGET_DIR)
 
+ifeq ($(BR2_TARGET_SEPARATE_USR_LOCAL),y)  
+	rm -rf $$(USRLOCAL_$(2)_TARGET_DIR)
+	mv $$(TARGET_DIR)/usr/local $$(USRLOCAL_$(2)_TARGET_DIR)
+	mkdir $$(TARGET_DIR)/usr/local
+endif
+
 	echo '#!/bin/sh' > $$(FAKEROOT_SCRIPT)
 	echo "set -e" >> $$(FAKEROOT_SCRIPT)
 
@@ -199,6 +213,33 @@ ifneq ($$(ROOTFS_$(2)_COMPRESS_CMD),)
 endif
 	$$(foreach hook,$$(ROOTFS_$(2)_POST_GEN_HOOKS),$$(call $$(hook))$$(sep))
 
+$$(BINARIES_DIR)/$$(USRLOCAL_$(2)_FINAL_IMAGE_NAME): ROOTFS=$(2)
+$$(BINARIES_DIR)/$$(USRLOCAL_$(2)_FINAL_IMAGE_NAME): FAKEROOT_SCRIPT=$$(ROOTFS_$(2)_DIR)/fakeroot.usrlocal
+$$(BINARIES_DIR)/$$(USRLOCAL_$(2)_FINAL_IMAGE_NAME): TARGET_DIR=$$(USRLOCAL_$(2)_TARGET_DIR)
+$$(BINARIES_DIR)/$$(USRLOCAL_$(2)_FINAL_IMAGE_NAME): $$(ROOTFS_$(2)_DEPENDENCIES) $$(USRLOCAL_$(2)_DEPENDENCIES) $$(BINARIES_DIR)/$$(ROOTFS_$(2)_FINAL_IMAGE_NAME)
+	echo '#!/bin/sh' > $$(FAKEROOT_SCRIPT)
+	echo "set -e" >> $$(FAKEROOT_SCRIPT)
+
+	echo "chown -h -R 0:0 $$(USRLOCAL_$(2)_TARGET_DIR)" >> $$(FAKEROOT_SCRIPT)
+	$$(foreach hook,$$(ROOTFS_PRE_CMD_HOOKS),\
+		$$(call PRINTF,$$($$(hook))) >> $$(FAKEROOT_SCRIPT)$$(sep))
+	$$(foreach s,$$(call qstrip,$$(BR2_ROOTFS_POST_FAKEROOT_SCRIPT)),\
+		echo "echo '$$(TERM_BOLD)>>>   Executing fakeroot script $$(s)$$(TERM_RESET)'" >> $$(FAKEROOT_SCRIPT); \
+		echo $$(EXTRA_ENV) $$(s) $$(USRLOCAL_$(2)_TARGET_DIR) $$(BR2_ROOTFS_POST_SCRIPT_ARGS) >> $$(FAKEROOT_SCRIPT)$$(sep))
+
+	$$(foreach hook,$$(ROOTFS_$(2)_PRE_GEN_HOOKS),\
+		$$(call PRINTF,$$($$(hook))) >> $$(FAKEROOT_SCRIPT)$$(sep))
+	$$(call PRINTF,$$(ROOTFS_REPRODUCIBLE)) >> $$(FAKEROOT_SCRIPT)
+	$$(call PRINTF,$$(ROOTFS_SELINUX)) >> $$(FAKEROOT_SCRIPT)
+	$$(call PRINTF,$$(ROOTFS_$(2)_CMD)) >> $$(FAKEROOT_SCRIPT)
+	chmod a+x $$(FAKEROOT_SCRIPT)
+	PATH=$$(BR_PATH) FAKEROOTDONTTRYCHOWN=1 $$(HOST_DIR)/bin/fakeroot -- $$(FAKEROOT_SCRIPT)
+	rm -rf $$(USRLOCAL_$(2)_TARGET_DIR)
+ifneq ($$(ROOTFS_$(2)_COMPRESS_CMD),)
+	PATH=$$(BR_PATH) $$(ROOTFS_$(2)_COMPRESS_CMD) $$@ > $$@$$(ROOTFS_$(2)_COMPRESS_EXT)
+endif
+	$$(foreach hook,$$(ROOTFS_$(2)_POST_GEN_HOOKS),$$(call $$(hook))$$(sep))
+
 rootfs-$(1)-show-depends:
 	@echo $$(ROOTFS_$(2)_DEPENDENCIES)
 
@@ -207,11 +248,15 @@ rootfs-$(1)-show-info:
 	$$(info $$(call clean-json,{ $$(call json-info,ROOTFS_$(2)) }))
 
 rootfs-$(1): $$(BINARIES_DIR)/$$(ROOTFS_$(2)_FINAL_IMAGE_NAME)
+usrlocal-$(1): $$(BINARIES_DIR)/$$(USRLOCAL_$(2)_FINAL_IMAGE_NAME)
 
-.PHONY: rootfs-$(1) rootfs-$(1)-show-depends rootfs-$(1)-show-info
+.PHONY: rootfs-$(1) rootfs-$(1)-show-depends rootfs-$(1)-show-info usrlocal-$(1)
 
 ifeq ($$(BR2_TARGET_ROOTFS_$(2)),y)
 TARGETS_ROOTFS += rootfs-$(1)
+ifeq ($(BR2_TARGET_SEPARATE_USR_LOCAL),y)  
+TARGETS_ROOTFS += usrlocal-$(1)
+endif
 PACKAGES += $$(filter-out rootfs-%,$$(ROOTFS_$(2)_FINAL_RECURSIVE_DEPENDENCIES))
 endif
 

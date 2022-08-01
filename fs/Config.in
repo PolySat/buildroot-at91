@@ -5,6 +5,11 @@ config BR2_PREFER_USR_LOCAL
 	help
 	   Install as many files as possible in /usr/local instead of /usr
 
+config BR2_TARGET_SEPARATE_USR_LOCAL
+        bool "Separate /usr/local"
+        help
+          Split the root fs image into two pieces: / and /usr/local.
+
 
 source "fs/axfs/Config.in"
 source "fs/btrfs/Config.in"
