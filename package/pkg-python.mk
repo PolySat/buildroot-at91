@@ -71,6 +71,7 @@ HOST_PKG_PYTHON_DISTUTILS_ENV = \
 HOST_PKG_PYTHON_DISTUTILS_INSTALL_OPTS = \
 	--prefix=$(HOST_DIR)
 
+PYTHON_SINGLE_MANAGED ?= --single-version-externally-managed
 # Target setuptools-based packages
 PKG_PYTHON_SETUPTOOLS_ENV = \
 	_PYTHON_HOST_PLATFORM="$(PKG_PYTHON_HOST_PLATFORM)" \
@@ -89,14 +90,14 @@ PKG_PYTHON_SETUPTOOLS_INSTALL_TARGET_OPTS = \
 	--install-headers=$(PYTHON_PREFIX)/include/python$(PYTHON3_VERSION_MAJOR) \
 	--prefix=$(PYTHON_PREFIX) \
 	--executable=$(PYTHON_PREFIX)/bin/python \
-	--single-version-externally-managed \
+	$(PYTHON_SINGLE_MANAGED) \
 	--root=$(TARGET_DIR)
 
 PKG_PYTHON_SETUPTOOLS_INSTALL_STAGING_OPTS = \
 	--install-headers=$(PYTHON_PREFIX)/include/python$(PYTHON3_VERSION_MAJOR) \
 	--prefix=$(PYTHON_PREFIX) \
 	--executable=$(PYTHON_PREFIX)/bin/python \
-	--single-version-externally-managed \
+	$(PYTHON_SINGLE_MANAGED) \
 	--root=$(STAGING_DIR)
 
 # Host setuptools-based packages
@@ -109,7 +110,7 @@ HOST_PKG_PYTHON_SETUPTOOLS_ENV = \
 HOST_PKG_PYTHON_SETUPTOOLS_INSTALL_OPTS = \
 	--prefix=$(HOST_DIR) \
 	--root=/ \
-	--single-version-externally-managed
+	$(PYTHON_SINGLE_MANAGED)
 
 ################################################################################
 # inner-python-package -- defines how the configuration, compilation
