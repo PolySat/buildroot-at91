@@ -1,0 +1,9 @@
+config BR2_PACKAGE_PYTHON_TENJIN
+	bool "python-tenjin"
+	help
+	  pyTenjin is a very fast and full-featured template engine.
+          You can embed Python statements and expressions into your
+          template file. pyTenjin converts it into Python script
+          and evaluate it.
+
+	  https://pypi.org/project/Tenjin/
