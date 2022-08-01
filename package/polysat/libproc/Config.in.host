@@ -1,0 +1,6 @@
+config BR2_PACKAGE_HOST_LIBPROC
+    bool "PolySat Process Library"
+    select BR2_PACKAGE_HOST_POLY_XDRGEN
+    help
+        Polysat's process library code.
+

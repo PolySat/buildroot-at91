@@ -1,0 +1,26 @@
+config BR2_PACKAGE_LIBPROC
+    bool "PolySat Process Library"
+    select BR2_PACKAGE_HOST_POLYXDR
+    help
+        Polysat's process library code.
+
+choice
+   prompt "version"
+   depends on BR2_PACKAGE_LIBPROC
+   default BR2_PACKAGE_LIBPROC_version_head
+   help
+      The git version of the code to use
+
+   config BR2_PACKAGE_LIBPROC_version_head
+      bool "HEAD"
+
+   config BR2_PACKAGE_LIBPROC_version_custom
+      bool "Specify a custom git tag"
+endchoice
+
+config BR2_PACKAGE_LIBPROC_CONFIG_CUSTOM_VERSION_STR
+   string "libproc process version"
+   depends on BR2_PACKAGE_LIBPROC
+   depends on BR2_PACKAGE_LIBPROC_version_custom
+   help
+      Custom git tag to build.
