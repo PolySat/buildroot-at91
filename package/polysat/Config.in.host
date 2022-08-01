@@ -1,4 +1,5 @@
 menu "PolySat Host utilities"
 	source "package/polysat/polyxdr/Config.in.host"
 	source "package/polysat/libproc/Config.in.host"
+	source "package/polysat/libgpio/Config.in.host"
 endmenu

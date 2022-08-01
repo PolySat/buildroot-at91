@@ -1,3 +1,9 @@
 menu "PolySat Libraries and tools"
 	source "package/polysat/libproc/Config.in"
+	source "package/polysat/uvccapture/Config.in"
+endmenu
+
+menu "Misc libraries"
+	source "package/polysat/librohc/Config.in"
+	source "package/polysat/libgpio/Config.in"
 endmenu
