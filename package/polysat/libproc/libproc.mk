@@ -32,38 +32,31 @@ define HOST_LIBPROC_BUILD_CMDS
  $(MAKE1) XDRGEN=$(HOST_DIR)/usr/bin/poly-xdrgen -C $(@D)
 endef
 
-ifeq ($(BR2_PACKAGE_POLYSAT_BINARIES),y)
-
 define LIBPROC_INSTALL_STAGING_CMDS
    $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) INC_PATH=$(STAGING_DIR)/usr/include LIB_PATH=$(STAGING_DIR)/usr/lib install
+endef
+
+define LIBPROC_INSTALL_TARGET_CMDS
+   $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) INC_PATH=$(STAGING_DIR)/usr/include LIB_PATH=$(TARGET_DIR)/usr/lib install
+endef
+
+define HOST_LIBPROC_INSTALL_CMDS
+   $(MAKE1) -C $(@D) INC_PATH=$(HOST_DIR)/usr/include LIB_PATH=$(HOST_DIR)/usr/lib install
+endef
+
+define LIBPROC_INSTALL_BIN_STAGING_CMDS
    $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) INC_PATH=$(BINSTAGING_DIR)/usr/include LIB_PATH=$(BINSTAGING_DIR)/usr/lib install
 endef
 
-define LIBPROC_INSTALL_TARGET_CMDS
-   $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) INC_PATH=$(STAGING_DIR)/usr/include LIB_PATH=$(TARGET_DIR)/usr/lib install
+define LIBPROC_INSTALL_BIN_TARGET_CMDS
    $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) INC_PATH=$(BINSTAGING_DIR)/usr/include LIB_PATH=$(BINTARGET_DIR)/usr/lib install
 endef
 
-define HOST_LIBPROC_INSTALL_CMDS
-   $(MAKE1) -C $(@D) INC_PATH=$(HOST_DIR)/usr/include LIB_PATH=$(HOST_DIR)/usr/lib install
+define HOST_LIBPROC_INSTALL_BIN_CMDS
    $(MAKE1) -C $(@D) INC_PATH=$(BINHOST_DIR)/usr/include LIB_PATH=$(BINHOST_DIR)/usr/lib install
 endef
 
-else
-
-define LIBPROC_INSTALL_STAGING_CMDS
-   $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) INC_PATH=$(STAGING_DIR)/usr/include LIB_PATH=$(STAGING_DIR)/usr/lib install
-endef
-
-define LIBPROC_INSTALL_TARGET_CMDS
-   $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) INC_PATH=$(STAGING_DIR)/usr/include LIB_PATH=$(TARGET_DIR)/usr/lib install
-endef
-
-define HOST_LIBPROC_INSTALL_CMDS
-   $(MAKE1) -C $(@D) INC_PATH=$(HOST_DIR)/usr/include LIB_PATH=$(HOST_DIR)/usr/lib install
-endef
-
-endif
-
 $(eval $(generic-package))
 $(eval $(host-generic-package))
+
+$(eval $(generic-binary-package))
