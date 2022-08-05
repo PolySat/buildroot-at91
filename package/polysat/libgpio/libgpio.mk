@@ -44,6 +44,7 @@ endef
 
 define HOST_LIBGPIO_INSTALL_CMDS
    $(MAKE1) -C $(@D) INC_PATH=$(HOST_DIR)/usr/include LIB_PATH=$(HOST_DIR)/usr/lib BIN_PATH=$(HOST_DIR)/usr/bin SBIN_PATH=$(HOST_DIR)/usr/sbin install
+   $(HOST_DIR)/bin/patchelf --set-rpath "$(HOST_DIR)/lib" $(HOST_DIR)/bin/gpiotest
 endef
 
 $(eval $(generic-package))
